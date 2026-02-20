@@ -378,6 +378,22 @@ show_completion() {
     echo "🌸 感谢使用椿卷ฅ的IP监控系统！"
 }
 
+# 显示帮助信息
+show_help() {
+    echo "=== 🌸 椿卷ฅ的IP监控交互式安装向导 ==="
+    echo ""
+    echo "用法: $0 [选项]"
+    echo ""
+    echo "选项:"
+    echo "  无参数   开始交互式安装"
+    echo "  --help   显示此帮助信息"
+    echo ""
+    echo "示例:"
+    echo "  $0                    # 开始安装"
+    echo "  curl -s https://raw.githubusercontent.com/RapheaI/server-ip-monitor/main/ip-monitor-interactive.sh | bash  # 一键安装"
+    echo ""
+}
+
 # 主安装流程
 main() {
     show_welcome
@@ -401,4 +417,16 @@ main() {
 }
 
 # 运行主程序
-main "$@"
+case "${1:-}" in
+    "--help"|"-h")
+        show_help
+        ;;
+    "")
+        main "$@"
+        ;;
+    *)
+        echo "未知选项: $1"
+        show_help
+        exit 1
+        ;;
+esac
