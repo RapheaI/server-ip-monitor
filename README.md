@@ -24,18 +24,22 @@
 
 ## 🚀 快速开始
 
-### 方法1: 一键安装 (推荐)
+### 🌸 椿卷ฅ推荐的最佳语法
 ```bash
-# 🌸 真正的一键安装！
+# 🎯 所有脚本都使用这个语法！
 bash <(curl -s https://raw.githubusercontent.com/RapheaI/server-ip-monitor/main/ip-monitor-universal.sh)
 ```
 
-### 方法2: 传统安装
+### 其他脚本语法
 ```bash
-# 下载交互式脚本
-curl -O https://raw.githubusercontent.com/RapheaI/server-ip-monitor/main/ip-monitor-interactive.sh
-chmod +x ip-monitor-interactive.sh
-./ip-monitor-interactive.sh
+# 卸载脚本
+bash <(curl -s https://raw.githubusercontent.com/RapheaI/server-ip-monitor/main/ip-monitor-uninstall.sh)
+
+# ARM兼容性检查
+bash <(curl -s https://raw.githubusercontent.com/RapheaI/server-ip-monitor/main/arm-compatibility-check.sh)
+
+# 交互式安装
+bash <(curl -s https://raw.githubusercontent.com/RapheaI/server-ip-monitor/main/ip-monitor-interactive.sh)
 ```
 
 ### 2. 配置Telegram机器人

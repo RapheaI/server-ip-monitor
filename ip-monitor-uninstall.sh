@@ -322,6 +322,7 @@ show_help() {
     echo "=== 🌸 IP监控完全卸载脚本 ==="
     echo ""
     echo "用法:"
+    echo "  bash <(curl -s https://raw.githubusercontent.com/RapheaI/server-ip-monitor/main/ip-monitor-uninstall.sh)"
     echo "  $0                    # 开始交互式卸载"
     echo "  $0 --force           # 强制卸载（不询问确认）"
     echo "  $0 --help            # 显示此帮助"

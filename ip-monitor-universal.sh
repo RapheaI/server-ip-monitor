@@ -285,8 +285,6 @@ show_help() {
     echo ""
     echo "用法:"
     echo "  bash <(curl -s https://raw.githubusercontent.com/RapheaI/server-ip-monitor/main/ip-monitor-universal.sh)"
-    echo "  或"
-    echo "  curl -s https://raw.githubusercontent.com/RapheaI/server-ip-monitor/main/ip-monitor-universal.sh | bash"
     echo ""
     echo "选项:"
     echo "  无参数   开始交互式安装"
