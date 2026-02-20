@@ -124,11 +124,23 @@ check_ip_change() {
         
         log_message "INFO" "检测到IP变更: $previous_ip -> $current_ip"
         
+        # 清理IP地址，确保只包含纯IP
+        local clean_previous_ip=$(echo "$previous_ip" | grep -oE '([0-9]{1,3}\.){3}[0-9]{1,3}' | head -1)
+        local clean_current_ip=$(echo "$current_ip" | grep -oE '([0-9]{1,3}\.){3}[0-9]{1,3}' | head -1)
+        
+        # 如果清理失败，使用原始值
+        if [ -z "$clean_previous_ip" ]; then
+            clean_previous_ip="$previous_ip"
+        fi
+        if [ -z "$clean_current_ip" ]; then
+            clean_current_ip="$current_ip"
+        fi
+        
         # 构建Telegram消息
         local message="🚨 *服务器IP变更通知*\n\n"
         message+="*服务器*: \`$hostname\`\n"
-        message+="*原IP*: \`$previous_ip\`\n"
-        message+="*新IP*: \`$current_ip\`\n"
+        message+="*原IP*: \`$clean_previous_ip\`\n"
+        message+="*新IP*: \`$clean_current_ip\`\n"
         message+="*时间*: $timestamp\n"
         message+="\n💡 请及时更新相关配置"
         
