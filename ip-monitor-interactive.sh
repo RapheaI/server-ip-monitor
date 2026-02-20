@@ -1,51 +1,31 @@
 #!/bin/bash
 
-# 🌸 椿卷ฅ的IP监控交互式安装向导
+# 🌸 椿卷ฅ的IP监控交互式安装向导 - 修复版
 # 一键完成所有配置和部署
 
 set -e  # 遇到错误立即退出
 
-# 颜色定义
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-CYAN='\033[0;36m'
-NC='\033[0m' # No Color
-
-# 打印彩色消息
-print_color() {
-    local color="$1"
-    local message="$2"
-    echo -e "${color}${message}${NC}"
+# 简单的输出函数（避免颜色问题）
+print_step() {
+    echo "📋 步骤 $1: $2"
 }
 
-# 打印标题
+print_success() {
+    echo "✅ $1"
+}
+
+print_warning() {
+    echo "⚠️ $1"
+}
+
+print_error() {
+    echo "❌ $1"
+}
+
 print_title() {
     echo ""
-    print_color "$PURPLE" "=== $1 ==="
+    echo "=== $1 ==="
     echo ""
-}
-
-# 打印步骤
-print_step() {
-    print_color "$CYAN" "📋 步骤 $1: $2"
-}
-
-# 打印成功
-print_success() {
-    print_color "$GREEN" "✅ $1"
-}
-
-# 打印警告
-print_warning() {
-    print_color "$YELLOW" "⚠️ $1"
-}
-
-# 打印错误
-print_error() {
-    print_color "$RED" "❌ $1"
 }
 
 # 用户输入函数
@@ -101,17 +81,17 @@ detect_architecture() {
 # 欢迎界面
 show_welcome() {
     clear
-    print_color "$PURPLE" "========================================"
-    print_color "$PURPLE" "🌸 椿卷ฅ的IP监控交互式安装向导"
-    print_color "$PURPLE" "========================================"
+    echo "========================================"
+    echo "🌸 椿卷ฅ的IP监控交互式安装向导"
+    echo "========================================"
     echo ""
-    print_color "$CYAN" "这个向导将帮助你："
+    echo "这个向导将帮助你："
     echo "  🛡️  配置Telegram机器人"
     echo "  🔧  安装IP监控服务"
     echo "  📱  测试消息推送"
     echo "  🚀  完成所有部署"
     echo ""
-    print_color "$YELLOW" "请准备好你的Telegram Bot Token和Chat ID"
+    echo "请准备好你的Telegram Bot Token和Chat ID"
     echo ""
     
     if ! user_confirm "是否继续安装？" "y"; then
@@ -142,12 +122,7 @@ system_check() {
     
     if [ ${#missing_deps[@]} -gt 0 ]; then
         print_error "缺少必要的依赖: ${missing_deps[*]}"
-        if user_confirm "是否尝试安装缺失的依赖？" "y"; then
-            install_dependencies "${missing_deps[@]}"
-        else
-            print_error "无法继续安装"
-            exit 1
-        fi
+        exit 1
     fi
     
     # 检查网络
@@ -155,30 +130,7 @@ system_check() {
     if ping -c 1 -W 3 api.telegram.org >/dev/null 2>&1; then
         print_success "网络连接正常"
     else
-        print_warning "网络连接可能有问题，但继续安装"
-    fi
-}
-
-# 安装依赖
-install_dependencies() {
-    local deps=("$@")
-    
-    if command -v apt >/dev/null 2>&1; then
-        # Debian/Ubuntu
-        print_step "*" "使用APT安装依赖"
-        apt update
-        apt install -y "${deps[@]}"
-    elif command -v yum >/dev/null 2>&1; then
-        # CentOS/RHEL
-        print_step "*" "使用YUM安装依赖"
-        yum install -y "${deps[@]}"
-    elif command -v apk >/dev/null 2>&1; then
-        # Alpine
-        print_step "*" "使用APK安装依赖"
-        apk add "${deps[@]}"
-    else
-        print_error "无法自动安装依赖，请手动安装: ${deps[*]}"
-        exit 1
+        print_warning "网络连接可能有问题"
     fi
 }
 
@@ -186,13 +138,13 @@ install_dependencies() {
 telegraｍ_config() {
     print_title "Telegram机器人配置"
     
-    print_color "$YELLOW" "🤖 如果你还没有Telegram机器人，请："
+    echo "🤖 如果你还没有Telegram机器人，请："
     echo "  1. 在Telegram中搜索 @BotFather"
     echo "  2. 发送 /newbot 创建新机器人"
     echo "  3. 设置机器人名称和用户名"
     echo "  4. 复制得到的Bot Token"
     echo ""
-    print_color "$YELLOW" "💬 获取Chat ID："
+    echo "💬 获取Chat ID："
     echo "  1. 将机器人添加到你的聊天"
     echo "  2. 发送任意消息给机器人"
     echo "  3. 访问: https://api.telegram.org/bot<你的Token>/getUpdates"
@@ -237,11 +189,11 @@ test_telegram() {
     local hostname=$(hostname)
     local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     
-    local message="🧪 *IP监控测试消息*\n\n"
+    local message="🧪 IP监控测试消息\n\n"
     message+="交互式安装向导测试成功！\n"
-    message+="*服务器*: \`$hostname\`\n"
-    message+="*架构*: $arch\n"
-    message+="*时间*: $timestamp\n"
+    message+="服务器: $hostname\n"
+    message+="架构: $arch\n"
+    message+="时间: $timestamp\n"
     message+="\n🎉 配置验证完成！"
     
     # URL编码消息
@@ -272,13 +224,13 @@ select_version() {
     
     echo "请选择适合你系统的版本："
     echo ""
-    echo "  1. 🏗️ ARM优化版 (推荐用于ARM设备)"
+    echo "  1. ARM优化版 (推荐用于ARM设备)"
     echo "     适用于: 树莓派、ARM服务器等"
     echo ""
-    echo "  2. 🛡️ 增强版 (推荐用于x86服务器)"
+    echo "  2. 增强版 (推荐用于x86服务器)"
     echo "     适用于: 云服务器、VPS等"
     echo ""
-    echo "  3. 🔧 基础版 (轻量级)"
+    echo "  3. 基础版 (轻量级)"
     echo "     适用于: 资源有限的设备"
     echo ""
     
@@ -338,7 +290,7 @@ download_and_config() {
     if ./"$SCRIPT_NAME" --test; then
         print_success "脚本测试成功"
     else
-        print_warning "脚本测试有警告，但继续安装"
+        print_warning "脚本测试有警告"
     fi
 }
 
@@ -397,60 +349,33 @@ verify_installation() {
     else
         print_warning "脚本状态检查有警告"
     fi
-    
-    print_step "3" "发送最终测试消息"
-    local hostname=$(hostname)
-    local arch=$(detect_architecture)
-    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    
-    local message="🎉 *IP监控系统安装完成*\n\n"
-    message+="交互式安装向导已完成所有配置！\n"
-    message+="*服务器*: \`$hostname\`\n"
-    message+="*架构*: $arch\n"
-    message+="*服务*: $SERVICE_NAME\n"
-    message+="*时间*: $timestamp\n"
-    message+="\n🛡️ IP监控系统现已正式运行！"
-    
-    local encoded_message=$(echo "$message" | sed 's/ /%20/g; s/\n/%0A/g')
-    
-    local response=$(curl -s -X POST \
-        "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
-        -d "chat_id=${TELEGRAM_CHAT_ID}" \
-        -d "text=${encoded_message}" \
-        -d "parse_mode=Markdown")
-    
-    if echo "$response" | grep -q '"ok":true'; then
-        print_success "最终测试消息发送成功"
-    else
-        print_warning "最终测试消息发送失败"
-    fi
 }
 
 # 显示完成信息
 show_completion() {
     print_title "🎉 安装完成！"
     
-    print_color "$GREEN" "✅ IP监控系统已成功安装并运行"
+    print_success "IP监控系统已成功安装并运行"
     echo ""
-    print_color "$CYAN" "📋 安装摘要："
+    echo "📋 安装摘要："
     echo "  🤖 Telegram Bot: 已配置"
     echo "  🛡️  监控服务: $SERVICE_NAME"
     echo "  📱 消息推送: 已测试"
     echo "  🔧 系统架构: $(detect_architecture)"
     echo ""
-    print_color "$YELLOW" "🚀 下一步操作："
+    echo "🚀 下一步操作："
     echo "  1. 等待IP变更通知（如果有变化）"
     echo "  2. 查看服务状态: systemctl status $SERVICE_NAME"
     echo "  3. 查看监控日志: tail -f /var/log/ip-monitor.log"
     echo "  4. 测试手动检查: ./$SCRIPT_NAME --check"
     echo ""
-    print_color "$PURPLE" "💡 使用命令："
+    echo "💡 使用命令："
     echo "  systemctl status $SERVICE_NAME    # 查看服务状态"
     echo "  systemctl restart $SERVICE_NAME   # 重启服务"
     echo "  ./$SCRIPT_NAME --status          # 查看监控状态"
     echo "  ./$SCRIPT_NAME --test           # 测试消息推送"
     echo ""
-    print_color "$GREEN" "🌸 感谢使用椿卷ฅ的IP监控系统！"
+    echo "🌸 感谢使用椿卷ฅ的IP监控系统！"
 }
 
 # 主安装流程
