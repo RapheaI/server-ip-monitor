@@ -35,7 +35,7 @@ GUARD_LOG="$LOG_DIR/ip-monitor-guard.log"
 
 # ARM架构检测
 get_architecture() {
-    local arch=$(uname -m)
+    local arch=$(uname -m 2>/dev/null || echo "unknown")
     case "$arch" in
         "aarch64"|"arm64")
             echo "arm64"
@@ -434,6 +434,10 @@ case "${1:-}" in
         ;;
     "--test")
         local arch=$(get_architecture)
+        # 确保架构信息不为空
+        if [ -z "$arch" ] || [ "$arch" = "unknown" ]; then
+            arch="检测失败"
+        fi
         echo "🧪 ARM测试Telegram消息 (架构: $arch)..."
         send_telegram_message "🧪 *IP监控ARM版测试*\n\nARM架构兼容性测试成功！\n*架构*: $arch\n*时间*: $(date '+%Y-%m-%d %H:%M:%S')"
         ;;

@@ -39,7 +39,8 @@ user_confirm() {
 
 # 系统架构检测
 detect_architecture() {
-    case "$(uname -m)" in
+    local arch=$(uname -m 2>/dev/null || echo "unknown")
+    case "$arch" in
         "aarch64"|"arm64") echo "arm64" ;;
         "armv7l"|"armv8l") echo "arm32" ;;
         "x86_64") echo "x64" ;;
