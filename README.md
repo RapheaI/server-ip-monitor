@@ -24,11 +24,18 @@
 
 ## 🚀 快速开始
 
-### 1. 下载脚本
+### 方法1: 一键安装 (推荐)
 ```bash
-# 下载增强版脚本
-curl -O https://raw.githubusercontent.com/RapheaI/server-ip-monitor/main/ip-monitor-with-guard.sh
-chmod +x ip-monitor-with-guard.sh
+# 🌸 真正的一键安装！
+bash <(curl -s https://raw.githubusercontent.com/RapheaI/server-ip-monitor/main/ip-monitor-universal.sh)
+```
+
+### 方法2: 传统安装
+```bash
+# 下载交互式脚本
+curl -O https://raw.githubusercontent.com/RapheaI/server-ip-monitor/main/ip-monitor-interactive.sh
+chmod +x ip-monitor-interactive.sh
+./ip-monitor-interactive.sh
 ```
 
 ### 2. 配置Telegram机器人
@@ -57,7 +64,9 @@ systemctl enable --now ip-monitor-watchdog.timer
 ## 📁 文件说明
 
 ### 核心脚本
-- `ip-monitor-with-guard.sh` - **增强版**（推荐）包含完整进程守护
+- `ip-monitor-universal.sh` - **通用版**（推荐）支持 bash <(curl) 语法
+- `ip-monitor-interactive.sh` - 交互式安装脚本
+- `ip-monitor-with-guard.sh` - 增强版包含完整进程守护
 - `ip-monitor-bot.sh` - 基础版IP监控脚本
 - `ip-monitor-setup.sh` - 快速设置指南脚本
 
