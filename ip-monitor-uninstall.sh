@@ -1,23 +1,16 @@
 #!/bin/bash
 
-# 🌸 椿卷ฅ的IP监控完全卸载脚本
+# 🌸 椿卷ฅ的IP监控完全卸载脚本 - 简化版
 # 彻底清理所有IP监控系统组件
 
 set -e
 
-# 颜色定义
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-# 输出函数
+# 简单的输出函数（无颜色）
 print_step() { echo "📋 步骤 $1: $2"; }
-print_success() { echo -e "${GREEN}✅ $1${NC}"; }
-print_warning() { echo -e "${YELLOW}⚠️ $1${NC}"; }
-print_error() { echo -e "${RED}❌ $1${NC}"; }
-print_info() { echo -e "${BLUE}💡 $1${NC}"; }
+print_success() { echo "✅ $1"; }
+print_warning() { echo "⚠️ $1"; }
+print_error() { echo "❌ $1"; }
+print_info() { echo "💡 $1"; }
 
 # 用户确认
 confirm_uninstall() {
@@ -47,7 +40,6 @@ confirm_uninstall() {
 detect_services() {
     local services=()
     
-    # 检测可能安装的服务
     if systemctl list-unit-files | grep -q "ip-monitor-arm.service"; then
         services+=("ip-monitor-arm.service")
     fi
@@ -67,7 +59,6 @@ detect_services() {
 detect_scripts() {
     local scripts=()
     
-    # 检测可能安装的脚本位置
     if [ -f "/usr/local/bin/ip-monitor-arm-optimized.sh" ]; then
         scripts+=("/usr/local/bin/ip-monitor-arm-optimized.sh")
     fi
@@ -88,7 +79,6 @@ detect_scripts() {
         scripts+=("/usr/local/bin/ip-monitor-universal.sh")
     fi
     
-    # 当前目录的脚本
     for script in ip-monitor-*.sh; do
         if [ -f "$script" ]; then
             scripts+=("$(pwd)/$script")
@@ -112,7 +102,6 @@ stop_services() {
     for service in "${services[@]}"; do
         print_info "处理服务: $service"
         
-        # 停止服务
         if systemctl is-active "$service" >/dev/null 2>&1; then
             sudo systemctl stop "$service"
             print_success "已停止: $service"
@@ -120,7 +109,6 @@ stop_services() {
             print_info "服务未运行: $service"
         fi
         
-        # 禁用服务
         if systemctl is-enabled "$service" >/dev/null 2>&1; then
             sudo systemctl disable "$service"
             print_success "已禁用: $service"
@@ -128,11 +116,9 @@ stop_services() {
             print_info "服务未启用: $service"
         fi
         
-        # 重置失败状态
         sudo systemctl reset-failed "$service" 2>/dev/null || true
     done
     
-    # 重新加载systemd
     sudo systemctl daemon-reload
     print_success "服务重载完成"
 }
@@ -154,7 +140,6 @@ remove_service_files() {
         fi
     done
     
-    # 重新加载systemd
     sudo systemctl daemon-reload
     print_success "服务文件清理完成"
 }
@@ -172,7 +157,6 @@ remove_script_files() {
     
     for script in "${scripts[@]}"; do
         if [ -f "$script" ]; then
-            # 询问是否删除当前目录的脚本
             if [[ "$script" == "./"* ]] || [[ "$script" == "$(pwd)/"* ]]; then
                 read -p "删除当前目录脚本 $script? [y/N]: " confirm
                 if [[ "$confirm" =~ ^[Yy]$ ]]; then
@@ -182,7 +166,6 @@ remove_script_files() {
                     print_info "保留: $script"
                 fi
             else
-                # 系统目录的脚本直接删除
                 sudo rm -f "$script"
                 print_success "已删除: $script"
             fi
@@ -196,7 +179,6 @@ remove_script_files() {
 remove_data_files() {
     print_step "4" "删除数据和日志文件"
     
-    # 日志文件
     local log_files=(
         "/var/log/ip-monitor.log"
         "/var/log/ip-monitor-guard.log"
@@ -210,7 +192,6 @@ remove_data_files() {
         fi
     done
     
-    # 数据文件
     local data_dirs=(
         "/var/lib/ip-monitor"
         "/var/run/ip-monitor"
@@ -223,7 +204,6 @@ remove_data_files() {
         fi
     done
     
-    # PID和状态文件
     local state_files=(
         "/var/run/ip-monitor.pid"
         "/var/run/ip-monitor.health"
@@ -243,13 +223,11 @@ remove_data_files() {
 cleanup_processes() {
     print_step "5" "清理残留进程"
     
-    # 查找并终止IP监控相关进程
     local pids=$(pgrep -f "ip-monitor" 2>/dev/null || true)
     
     if [ -n "$pids" ]; then
         print_info "发现残留进程: $pids"
         
-        # 先尝试正常终止
         for pid in $pids; do
             if kill -0 "$pid" 2>/dev/null; then
                 kill "$pid" 2>/dev/null
@@ -257,10 +235,8 @@ cleanup_processes() {
             fi
         done
         
-        # 等待2秒
         sleep 2
         
-        # 检查是否还有进程存活
         local remaining_pids=$(pgrep -f "ip-monitor" 2>/dev/null || true)
         
         if [ -n "$remaining_pids" ]; then
@@ -300,7 +276,6 @@ verify_uninstall() {
         print_info "可以重新运行卸载脚本进行彻底清理"
     fi
     
-    # 最终检查进程
     local remaining_pids=$(pgrep -f "ip-monitor" 2>/dev/null || true)
     if [ -n "$remaining_pids" ]; then
         print_warning "仍有进程运行: $remaining_pids"
@@ -368,7 +343,6 @@ case "${1:-}" in
         show_help
         ;;
     "--force")
-        # 强制模式（跳过确认）
         stop_services
         remove_service_files
         remove_script_files
