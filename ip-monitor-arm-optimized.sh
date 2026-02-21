@@ -336,11 +336,27 @@ save_current_ip() {
     echo "${timestamp}|${ip}|${arch}" >> "$IP_HISTORY_FILE"
 }
 
+# 简单的IP获取（用于状态显示，不输出日志）
+get_simple_ip() {
+    local ip=""
+    local services=("https://api.ipify.org" "https://icanhazip.com" "https://ident.me")
+    
+    for service in "${services[@]}"; do
+        ip=$(curl -s -m 5 "$service" 2>/dev/null)
+        if [ -n "$ip" ] && [[ "$ip" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "$ip"
+            return 0
+        fi
+    done
+    echo "获取失败"
+    return 1
+}
+
 # 显示状态
 show_status() {
     local arch=$(get_architecture)
     echo "=== 🔍 IP监控状态 (架构: $arch) ==="
-    echo "当前IP: $(get_current_ip)"
+    echo "当前IP: $(get_simple_ip)"
     echo "上次IP: $(get_previous_ip)"
     echo "检查间隔: ${IP_CHECK_INTERVAL}秒"
     echo ""
