@@ -137,7 +137,7 @@ check_ip_change() {
         fi
         
         # 构建Telegram消息
-        local message="🚨 服务器IP变更通知 服务器: $hostname 架构: $(uname -m) 原IP: $clean_previous_ip 新IP: $clean_current_ip 时间: $timestamp 💡 请及时更新相关配置"
+        local message="🚨 服务器IP变更通知\n\n服务器: $hostname\n架构: $(uname -m)\n原IP: $clean_previous_ip\n新IP: $clean_current_ip\n时间: $timestamp\n\n💡 请及时更新相关配置"
         
         # 发送Telegram通知
         if send_telegram_message "$message"; then

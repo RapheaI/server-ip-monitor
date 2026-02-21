@@ -306,7 +306,7 @@ check_ip_change() {
             clean_current_ip="$current_ip"
         fi
         
-        local message="🚨 服务器IP变更通知 服务器: $hostname 架构: $arch 原IP: $clean_previous_ip 新IP: $clean_current_ip 时间: $timestamp 💡 请及时更新相关配置"
+        local message="🚨 服务器IP变更通知\n\n服务器: $hostname\n架构: $arch\n原IP: $clean_previous_ip\n新IP: $clean_current_ip\n时间: $timestamp\n\n💡 请及时更新相关配置"
         
         if send_telegram_message "$message"; then
             save_current_ip "$current_ip"
